@@ -4,9 +4,9 @@ http://www.lostdecadegames.com/how-to-make-a-simple-html5-canvas-game/
 
 
 
-var CatchEM = {};
+var catchEM = {};
 
-(function(ns){
+(function(ns, undefined){
 
 	//Define Game State
 	ns.state = {
@@ -37,15 +37,15 @@ var CatchEM = {};
 			graphics: {}
 		},
 		score: {
-			text: 'Monsters Caught: '
+			text: 'Monsters Caught: ',
 			count: 0,
 			x: 50,
 			y: 50
-		}
+		},
 		config: {
 			fps: 60,
 			gameId: 0,
-			width: 400,
+			width: 640,
 			height: 400,
 			ctx: 0,
 			elm: 0
@@ -64,11 +64,19 @@ var CatchEM = {};
 		},
 		hPlayerLoad: function(e){
 			ns.state.events.graphics['player'] = true;
+			
+			//Set Players Dimensions
+			ns.state.player.width = this.width;
+			ns.state.player.height = this.height;
 		},
 		hEnemyLoad: function(e){
 			ns.state.events.graphics['enemy'] = true;
+			
+			//Set Players Dimensions
+			ns.state.enemy.width = this.width;
+			ns.state.enemy.height = this.height;
 		},
-		hbackgroundLoad: function(e){
+		hBackgroundLoad: function(e){
 			ns.state.events.graphics['background'] = true;
 		}
 	};
@@ -92,7 +100,7 @@ var CatchEM = {};
 			//move Right when upRightarrow pressed
 			else if (39 in keyButton) player.x += (player.speed * modifier);
 			//move Bottom when Bottom arrow pressed
-			else if (34 in keyButton) player.y += (player.speed * modifier);
+			else if (40 in keyButton) player.y += (player.speed * modifier);
 			// Return is some other Key is pressed
 			else return false;
 			
@@ -101,7 +109,7 @@ var CatchEM = {};
 				 && player.y <= (enemy.y + enemy.height) && enemy.y <= (player.y + player.height)){
 				++score.count;
 				//Restart Game
-				this.reset();
+				ns.fns.reset();
 			}
 		},
 		render: function(){
@@ -117,7 +125,9 @@ var CatchEM = {};
 			if ('background' in graphics) ctx.drawImage(background.image , background.x, background.y);
 			
 			//Render Score
-			ctx.draw
+			ctx.fillStyle = 'red';
+			ctx.font = '16px Arial';
+			ctx.fillText(score.text + score.count, score.x, score.y);
 			
 			//Render Player
 			if ('player' in graphics) ctx.drawImage(player.image, player.x, player.y);
@@ -135,11 +145,14 @@ var CatchEM = {};
 			ns.state.enemy.y = Math.random() * ns.state.config.height;
 		},
 		main: function(){
-			update(1 / ns.state.config.fps);
-			render():
+			ns.fns.update(1 / ns.state.config.fps);
+			ns.fns.render();
 		},
 		createStage: function(){
-			var canvas = document.createElement('canvas');
+			var canvas = document.createElement('canvas'),
+				playerImg = 0,
+				enemyImg = 0,
+				backgroundImg = 0;
 			
 			canvas.width = ns.state.config.width;
 			canvas.height = ns.state.config.height;
@@ -149,6 +162,25 @@ var CatchEM = {};
 			ns.state.config.ctx = canvas.getContext('2d');
 			
 			document.body.appendChild(canvas);
+			
+			//Create Graphics
+			
+			//Create Background
+			backgroundImg = new Image();
+			backgroundImg.src = 'images/background.png';
+			
+			//Create player
+			playerImg = new Image();
+			playerImg.src = 'images/player.png';
+			
+			//Create Enemy
+			enemyImg = new Image();
+			enemyImg.src = 'images/enemy.png';
+			
+			//Save reference
+			ns.state.background.image = backgroundImg;
+			ns.state.player.image = playerImg;
+			ns.state.enemy.image = enemyImg;
 		},	
 		removeStage: function(){
 			document.removeChild(ns.state.config.elm);
@@ -156,19 +188,27 @@ var CatchEM = {};
 		},
 		registerEvents: function(){
 			addEventListener('keydown', ns.evtH.hKeyDown);
-			addEventListener('keyUp', ns.evtH.hKeyUp);
+			addEventListener('keyup', ns.evtH.hKeyUp);
+			ns.state.background.image.addEventListener('load', ns.evtH.hBackgroundLoad);
+			ns.state.player.image.addEventListener('load', ns.evtH.hPlayerLoad);
+			ns.state.enemy.image.addEventListener('load', ns.evtH.hEnemyLoad);
 		},	
 		unRegisterEvents: function(){
 			removeEventListener('keydown', ns.evtH.hKeyDown);
-			removeEventListener('keyUp', ns.evtH.hKeyUp);
+			removeEventListener('keyup', ns.evtH.hKeyUp);
+			ns.state.background.image.removeEventListener('load', ns.evtH.hBackgroundLoad);
+			ns.state.player.image.removeEventListener('load', ns.evtH.hPlayerLoad);
+			ns.state.enemy.image.removeEventListener('load', ns.evtH.hEnemyLoad);
 		},
 		init: function(){
 			this.createStage();
 			this.registerEvents();
+			this.reset();
 			ns.state.config.gameId = setInterval(this.main, 1000 / ns.state.config.fps);
+			//this.main();
 		},
 		destroy: function(){
-			this.removeStae();
+			this.removeState();
 			this.unRegisterEvents();
 			clearInterval(ns.state.config.gameId);
 		}
@@ -176,6 +216,5 @@ var CatchEM = {};
 	
 	//Start Game
 	ns.fns.init();
-	
 
-})(catchEM, undefined);
+})(catchEM);
