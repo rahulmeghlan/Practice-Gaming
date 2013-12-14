@@ -1,0 +1,30 @@
+<html>
+	<head>
+		<title>Playing with canvas</title>
+	</head>
+	<body>
+		<canvas id="testCanvas">
+		
+		</canvas>
+	</body>
+	<script type="text/javascript">
+	(function(){
+		var canvasElm = 0,
+			ctx = 0; 
+		
+		//Init Elems
+		canvasElm = document.getElementById('testCanvas');
+		ctx = canvasElm.getContext('2d');
+		
+		ctx.strokeStyle = 'red';
+		//ctx.strokeRect(20, 20, 100, 50);
+		//ctx.clearRect(20, 20, 10, 10);
+		
+		 ctx.beginPath();
+    ctx.moveTo(25,25);
+    ctx.lineTo(105,25);
+    ctx.lineTo(25,105);
+    ctx.stroke();
+	})();
+	</script>
+</html>
