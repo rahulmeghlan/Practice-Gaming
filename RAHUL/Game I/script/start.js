@@ -6,7 +6,8 @@ var game = game || {};   // Get the game object
             this.loop();
         },
         loop: function () {
-            setInterval(game.main, 1); //Execute as fast as possible
+            game.then = Date.now();
+            setInterval(game.gameLoop, 1); //Execute as fast as possible
         }
 
     };

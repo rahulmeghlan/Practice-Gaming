@@ -29,13 +29,11 @@ var game = game || {};   // Get the game object
 
     var envSetup = {            // setup the game environment
         stage: document.createElement("canvas"),
-        context: this.stage.getContext("2d"),
         init: function () {
             envSetup.stage.width = 512;
-            envSetup.stage.width = 480;
+            envSetup.stage.height = 480;
             document.body.appendChild(envSetup.stage);
             document.body.style.overflow = "hidden"; // This is to switch off the default scroll functionality of browser
-
             envSetup.bindEvents();
         },
         bindEvents: function () {
@@ -68,17 +66,31 @@ var game = game || {};   // Get the game object
         }
 
         if (heroReady) {
-            game.context.drawImage(heroImage, hero.x, hero.y);
+            game.context.drawImage(heroImage, game.players.hero.x, game.players.hero.y);
         }
 
         if (monsterReady) {
-            game.context.drawImage(monsterImage, monster.x, monster.y);
+            game.context.drawImage(monsterImage, game.players.monster.x, game.players.monster.y);
         }
     }
     };
 
+    game.context = envSetup.stage.getContext("2d");
     game.env.init = envSetup.init();
     game.env.stage = envSetup.stage;
     game.env.keyDown = keyDown;
+    game.render = function(){
+        if (bgReady) {
+            game.context.drawImage(bgImage, 0, 0);
+        }
+
+        if (heroReady) {
+            game.context.drawImage(heroImage, game.players.hero.x, game.players.hero.y);
+        }
+
+        if (monsterReady) {
+            game.context.drawImage(monsterImage, game.players.monster.x, game.players.monster.y);
+        }
+    }
 
 })(game);
